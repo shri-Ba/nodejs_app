@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: node-backend
+  template:
+    metadata:
+      labels:
+        app: node-backend
+    spec:
+      containers:
+      - name: node-backend
+        image: node-backend:latest
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 3000
+        volumeMounts:
+          - mountPath: /data
+            name: user-data
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+      volumes:
+        - name: user-data
+          persistentVolumeClaim:
+            claimName: user-data-pvc
+

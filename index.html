@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3-Tier App — Add User</title>
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:0;background:#f3f4f6}
+    .card{max-width:520px;margin:60px auto;padding:24px;border-radius:12px;background:white;box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+    h1{margin:0 0 12px;font-size:20px}
+    label{display:block;margin:12px 0 4px;color:#333;font-size:14px}
+    input[type="text"], input[type="number"]{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px}
+    button{margin-top:16px;padding:10px 14px;border:0;border-radius:8px;background:#2563eb;color:white;font-weight:600;cursor:pointer}
+    .status{margin-top:12px;font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Add Person</h1>
+    <form id="userForm">
+      <label>Full name</label>
+      <input name="name" type="text" required />
+
+      <label>Phone</label>
+      <input name="phone" type="text" required />
+
+      <label>Place</label>
+      <input name="place" type="text" />
+
+      <label>Age</label>
+      <input name="age" type="number" min="0" />
+
+      <button type="submit">Submit</button>
+      <div class="status" id="status"></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('userForm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = 'Submitting...';
+      const data = {
+        name: form.name.value.trim(),
+        phone: form.phone.value.trim(),
+        place: form.place.value.trim(),
+        age: form.age.value ? parseInt(form.age.value, 10) : null
+      };
+      try {
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Server error');
+        status.textContent = 'Saved ✓ (id=' + json.id + ')';
+        form.reset();
+      } catch (err) {
+        status.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
+
